@@ -1,0 +1,4 @@
+condition,replications,avg_presentation_slots_over_5_days
+reference,10,28.7
+baseline,10,18.2
+alternative,10,23.4
