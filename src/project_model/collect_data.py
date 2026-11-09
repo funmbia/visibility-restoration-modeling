@@ -45,7 +45,7 @@ def save_outputs(
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # --- 0. Save all generated raw data
-    write_csv(OUTPUT_DIR / "all_data.csv", daily_rows)
+    write_csv(output_dir / "all_data.csv", daily_rows)
 
     # --- 1. Save the data from each condition: one each for reference, baseline, alternative
     raw_paths = {
