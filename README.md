@@ -3,7 +3,7 @@
 ---
 
 This repository contains the original Mesa Civil Violence example
-and the adapted YouTube visibility model. For the inquiry rationale, evidence, representation choices, assumptions, etc, see the [DEL02.1 Report](). The README focuses on how to run and inspect the code. 
+and the adapted YouTube visibility model. For the inquiry rationale, evidence, representation choices, assumptions, etc, see the [DEL02.1 Report](docs/DEL02.1_Report.pdf). The README focuses on how to run and inspect the code. 
 
 ### Repo Structure
         README.md
@@ -75,7 +75,7 @@ The project has 3 conditons (not 2)
 - Current: a video is taken down for some time and simply made available again after a successful appeal
 - Alternative: proposed arrangement where a reinstated video gets a visibility boost to make up for lost exposure opportunities
 
-For details on how the simulation was developed, how the computation is arranged, what parts of YouTube is represented, or output interpretation, refer to [DEL02.1 Report]().
+For details on how the simulation was developed, how the computation is arranged, what parts of YouTube is represented, or output interpretation, refer to [DEL02.1 Report](docs/DEL02.1_Report.pdf).
 
 **Output File Format**:     
 Output files follow the naming pattern as required. However, since there are three conditions, files that begin with '```reference_xxx```' are from the reference condition. 
