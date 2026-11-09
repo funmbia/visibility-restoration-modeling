@@ -1,4 +1,4 @@
-"""Save raw results and plots for the DEL02."""
+"""Save raw results and plots for DEL02."""
 
 from __future__ import annotations
 
@@ -32,9 +32,11 @@ def save_outputs(
     output_dir: Path | str = OUTPUT_DIR,
 ) -> dict[str, Path]:
     """
+    
+        reference condition files: reference_xxx
         baseline condition files: baseline_xxx
         alternative condition files: alternative_xxx
-        files that display both baseline and alternative: BOTH_xxx
+        files that display reference, baseline and alternative: ALL_xxx
     """
 
     if not daily_rows:
@@ -45,7 +47,7 @@ def save_outputs(
     # --- 0. Save all generated raw data
     write_csv(OUTPUT_DIR / "all_data.csv", daily_rows)
 
-    # --- 1. Save the data from across all replications: one each for reference, baseline, alternative
+    # --- 1. Save the data from each condition: one each for reference, baseline, alternative
     raw_paths = {
         condition: output_dir / f"{condition}_raw_00_daily_presentation_slots.csv"
         for condition in CONDITIONS
@@ -54,7 +56,7 @@ def save_outputs(
         write_csv(path, [row for row in daily_rows if row["condition"] == condition])
 
 
-    # --- 2A. Average presentation slots received each day
+    # --- 2A. Find the avg value for each day per condition
     values_by_day: dict[tuple[str, int], list[int]] = defaultdict(list)
     totals_by_run: dict[tuple[int, str], int] = defaultdict(int)
     for row in daily_rows:
@@ -74,7 +76,8 @@ def save_outputs(
                     "avg_presentation_slots": round(avg, 4)
                 }
             )
-    write_csv(output_dir / "BOTH_raw_00_daily_presentation_slots.csv", daily_avgs)
+        tmp = condition + "_raw_01_avg_daily_presentation_slots.csv"
+        write_csv(output_dir / tmp, [row for row in daily_avgs if row["condition"] == condition])
 
     # --- 2B. Graph 2A
     fig, ax = plt.subplots(figsize=(8.5, 5.2))
@@ -89,17 +92,17 @@ def save_outputs(
         )
     ax.set_title("Average Presentation Slots Received by the Affected Videos")
     ax.set_xlabel("Simulated day")
-    ax.set_ylabel("Average Presentation Slots Received")
+    ax.set_ylabel("Avg Presentation Slots Received")
     ax.set_xticks(range(1, scenario.n_days + 1))
     ax.grid(True, alpha=0.3)
     ax.legend(title="Condition")
     fig.tight_layout()
-    daily_plot = output_dir / "BOTH_processed_00_daily_presentation_slots.png"
+    daily_plot = output_dir / "ALL_processed_00_daily_presentation_slots.png"
     fig.savefig(daily_plot, dpi=180)
     plt.close(fig)
 
 
-    # --- 3A. Average the presentation slots received across for all days
+    # --- 3A. Find the avg value for each condition across all 5 days
     totals_by_condition: dict[str, list[int]] = defaultdict(list)
     for (_, condition), total in totals_by_run.items():
         totals_by_condition[condition].append(total)
@@ -115,7 +118,7 @@ def save_outputs(
                 key: round(avg, 4)
             }
         )
-    write_csv(output_dir / "BOTH_raw_01_combined_presentation_slots.csv", comparison)
+    write_csv(output_dir / "ALL_raw_00_combined_presentation_slots.csv", comparison)
 
 
     comparison_by_condition = {row["condition"]: row for row in comparison}
@@ -126,11 +129,11 @@ def save_outputs(
         [condition.capitalize() for condition in CONDITIONS],
         [comparison_by_condition[condition][key] for condition in CONDITIONS],
     )
-    ax.set_title("AveragePresentation Slots Received over All Days")
-    ax.set_ylabel("Average Presentation Slots Received")
+    ax.set_title("Average Presentation Slots Received over All 5 Days")
+    ax.set_ylabel("Avg Presentation Slots Received")
     ax.grid(axis="y", alpha=0.3)
     fig.tight_layout()
-    fig.savefig(output_dir / "BOTH_processed_01_combined_presentation_slots.png")
+    fig.savefig(output_dir / "ALL_processed_01_combined_presentation_slots.png")
     plt.close(fig)
 
     # 4. Calculate the difference across conditions
@@ -150,5 +153,5 @@ def save_outputs(
             round(100 * recovered / missed, 2) if missed > 0 else "negative recovery, the alternative did not make up for missed presentation slots"
         ),
     }]
-    write_csv(output_dir / "BOTH_processed_02_summary_list.csv", summary_list)
+    write_csv(output_dir / "ALL_processed_02_summary_list.csv", summary_list)
     
