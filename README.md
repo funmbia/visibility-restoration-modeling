@@ -53,7 +53,7 @@ solara run app.py
 
 ##### 3. To run the adpated DEL02 YouTube Visibility model from the home directory
 ```
-python project_model/app.py
+python src/project_model/app.py
 ```
 else if already in the ```project_model``` directory
 ```
