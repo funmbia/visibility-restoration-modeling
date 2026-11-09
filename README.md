@@ -39,7 +39,7 @@ source .venv/bin/activate
 or ```.venv\Scripts\Activate.ps1``` for Windows 
 ##### 1. Install the software requirements
 ```
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 
 ##### 2. To run the Mesa Civil Violence example from the home directory
