@@ -98,15 +98,15 @@ def PresentationGraph(model: VisibilityModel):
 
             ax.plot(
                 records["day"],
-                records["total_presentation_slots"],
+                records["presentation_slots"],
                 marker="o",
                 linewidth=2,
                 color=CONDITION_COLORS[condition],
                 label=condition.capitalize(),
             )
             
-            records.to_csv(OUTPUT_DIR / "ALL_raw_00_daily_presentation_slots.csv", index=False)
-            total_slots[condition] = records["total_presentation_slots"].sum()
+            records.to_csv(OUTPUT_DIR / f"{condition}_raw_00_daily_presentation_slots.csv", index=False)
+            total_slots[condition] = records["presentation_slots"].sum()
 
         ax.set(
             xlabel="Simulated Day",
@@ -144,8 +144,8 @@ def PresentationGraph(model: VisibilityModel):
         # 3. Save a summary for the displayed run.
         reference, baseline, alternative = (total_slots[c] for c in CONDITIONS)
         missed = reference - baseline
-        gained = alternative - baseline
-        recovered = reference - alternative
+        recovered = alternative - baseline
+        gap = reference - alternative
 
         summary_list = [{
             "n_videos": model.scenario.n_videos,
@@ -157,9 +157,9 @@ def PresentationGraph(model: VisibilityModel):
             "baseline_slots": round(baseline, 4),
             "alternative_slots": round(alternative, 4),
             "reference_minus_baseline": round(missed, 4),
-            "alternative_minus_baseline": round(gained, 4),
-            "reference_minus_alternative": round(recovered, 4),
-            "recovery_percent": round(100 * gained / missed, 2) if missed > 0 else "N/A",
+            "alternative_minus_baseline": round(recovered, 4),
+            "reference_minus_alternative": round(gap, 4),
+            "recovery_percent": round(100 * recovered / missed, 2) if missed > 0 else "N/A",
         }]
         write_csv(OUTPUT_DIR / "ALL_raw_00_summary_list.csv", summary_list)
 
@@ -167,7 +167,7 @@ def PresentationGraph(model: VisibilityModel):
         with solara.Column(style={"overflow-y": "auto"}):
             solara.FigureMatplotlib(fig)
             solara.FigureMatplotlib(fig2)
-            solara.Markdown(f"*Recovery Percentage: {round(100 * gained / missed, 2) if missed > 0 else "0.0"}%*")
+            solara.Markdown(f"*Recovery Percentage: {round(100 * recovered / missed, 2) if missed > 0 else "0.0"}%*")
 
 
 @solara.component
@@ -196,7 +196,7 @@ def LiveDashboard(model: VisibilityModel):
         solara.Text("🟡 Available    🔴 Removed    🟢 Boosted")
         solara.Markdown(
             f"""
-            The moderator agent will randomly remove **{len(model.removal_schedule)}** videos on Day 2.   
+            The moderator agent randomly removes **{len(model.removal_schedule)}** videos on Day 2.   
             When they are reinstated, they will receive a ***temporary*** visibility boost.    
             Click **Reset** after adjusting the sidebar parameters.
             """

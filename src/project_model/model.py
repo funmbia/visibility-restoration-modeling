@@ -93,14 +93,14 @@ class VisibilityModel(mesa.Model):
         self.datacollector = mesa.DataCollector(
             model_reporters={
                 "day": "day",
-                "total_presentation_slots": "total_presentation_slots",
+                "presentation_slots": "presentation_slots",
                 "removed_today": "removed_today_count",
                 "reinstated_today": "reinstated_today_count",
             }
         )
 
     @property
-    def total_presentation_slots(self) -> int:
+    def presentation_slots(self) -> int:
         return sum(
             self.videos[video_id].daily_presentations 
             for video_id in self.removal_schedule
