@@ -35,22 +35,22 @@ class VideoAgent(mesa.Agent):
         self.reinstatement_day = day + duration
         self.boost_expiry_day = self.reinstatement_day + duration
 
-    def remove(self) -> None:
+    def remove(self):
         """Make this video unavailable for presentation."""
         self.available = False
         self.removed_today = True
 
-    def reinstate(self) -> None:
+    def reinstate(self):
         """Make this video available for presentation again."""
         self.available = True
         self.reinstated_today = True
 
-    def reset_daily_count(self) -> None:
+    def reset_daily_count(self):
         self.daily_presentations = 0
         self.removed_today = False
         self.reinstated_today = False
 
-    def record_presentation(self) -> None:
+    def record_presentation(self):
         self.daily_presentations += 1
         self.cumulative_presentations += 1
 

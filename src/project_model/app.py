@@ -14,12 +14,12 @@ from model import CONDITIONS, VisibilityModel
 OUTPUT_DIR = Path(__file__).resolve().parents[2] / "outputs"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# for the video grid
+# For the video grid
 AVAILABLE = "🟡"
 REMOVED = "🔴"
 BOOSTED = "🟢"
 
-CONDITION_COLORS = { # for the graphs
+CONDITION_COLORS = { # For the graphs
     "reference": "#626E77",  
     "baseline": "#1f77b4",     
     "alternative": "#7b2ca0", 
@@ -39,7 +39,7 @@ def write_csv(path: Path, rows: list[dict]):
 
 @solara.component
 def VideoGrid(model: VisibilityModel):
-    """Video statuses as grid, updated after every simulation step(day)."""
+    """Video statuses as a 'grid', updated after every simulation step(day)."""
     update_counter.get()
 
     with solara.Card("Video Status", style={"width": "100%"}):
@@ -64,7 +64,7 @@ def VideoGrid(model: VisibilityModel):
 
 @solara.component
 def PresentationGraph(model: VisibilityModel):
-    """Graph and save the results under all three conditions."""
+    """Graph and save the results for all three conditions."""
     update_counter.get()
 
     with solara.Card("Results", style={"width": "100%"}):
@@ -74,7 +74,7 @@ def PresentationGraph(model: VisibilityModel):
 
         total_slots = {}
 
-        # 1. Daily presentation slots for videos selected for removal.
+        # 1. Daily presentation slots for affected videos
         fig = Figure(figsize=(8, 4))
         ax = fig.subplots()
 
@@ -105,7 +105,7 @@ def PresentationGraph(model: VisibilityModel):
                 label=condition.capitalize(),
             )
             
-            records.to_csv(OUTPUT_DIR / f"{condition}_raw_00_daily_presentation_slots.csv", index=False)
+            records.to_csv(OUTPUT_DIR / f"{condition}_raw_00_daily_presentation_slots.csv", index=False) # Save each condition's output
             total_slots[condition] = records["presentation_slots"].sum()
 
         ax.set(
@@ -125,7 +125,7 @@ def PresentationGraph(model: VisibilityModel):
         fig.tight_layout()
         fig.savefig(OUTPUT_DIR / "ALL_processed_00_daily_presentation_slots.png", dpi=180)
 
-        # 2. Total presentation slots for videos selected for removal.
+        # 2. Total presentation slots for affected videos
         fig2 = Figure(figsize=(7.5, 4))
         ax2 = fig2.subplots()
         ax2.bar(
@@ -141,7 +141,7 @@ def PresentationGraph(model: VisibilityModel):
         fig2.tight_layout()
         fig2.savefig(OUTPUT_DIR / "ALL_processed_01_total_presentation_slots.png", dpi=180)
 
-        # 3. Save a summary for the displayed run.
+        # 3. Save a summary for the displayed run
         reference, baseline, alternative = (total_slots[c] for c in CONDITIONS)
         missed = reference - baseline
         recovered = alternative - baseline
@@ -167,16 +167,16 @@ def PresentationGraph(model: VisibilityModel):
         with solara.Column(style={"overflow-y": "auto"}):
             solara.FigureMatplotlib(fig)
             solara.FigureMatplotlib(fig2)
-            solara.Markdown(f"*Recovery Percentage: {round(100 * recovered / missed, 2) if missed > 0 else "0.0"}%*")
+            solara.Markdown(f"*Recovery Percentage: {round(100 * recovered / missed, 2) if missed > 0 else "N/A"}%*")
 
 
 @solara.component
 def SummaryDashboard(model: VisibilityModel):
-    """Page 0 is the intro page with short description & instructions"""
+    """Page 0 is the intro page with a short description & instructions"""
     with solara.Card("About"):
         solara.Markdown(
             """
-            This simulation compares the presentation opportunities received by videos under three conditions:
+            This simulation compares the presentation opportunities received by wrongfully removed videos under three conditions:
 
             - **Reference:** No videos are removed.
             - **Baseline:** Selected videos are removed, then reinstated.
@@ -208,7 +208,7 @@ def LiveDashboard(model: VisibilityModel):
 
 
 model_params = {
-    "condition": "alternative",  # Display the alternative in the live grid, but run the rest in the bg for the graphs
+    "condition": "alternative",  # Display the alternative in the live grid, but run the rest in the background for the graphs
     "n_videos": Slider("Number of Videos", 40, 10, 50, 10),
     "n_days": Slider("Simulation Days", 7, 5, 10, 1),
     "slots_per_day": Slider("Presentation Slots per day", 60, 20, 100, 20),

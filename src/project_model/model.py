@@ -13,7 +13,7 @@ CONDITIONS: tuple[Condition, ...] = ("reference", "baseline", "alternative")
 
 @dataclass
 class VisibilityScenario(Scenario):
-    """Synthetic assumptions - defaults unless provided by Solara"""
+    """Synthetic assumptions. The defaults unless changed by Solara"""
 
     n_videos: int = 40
     n_days: int = 7
@@ -29,7 +29,7 @@ class VisibilityScenario(Scenario):
     ) # prob of moderator removing
     category_removal_duration: dict[str, int] = field(
         default_factory=lambda: {"Category A": 1, "Category B": 3, "Category C": 2}
-    )
+    ) # period removed for (if applicable)
 
 class VisibilityModel(mesa.Model):
     """Run one condition of the model
@@ -89,7 +89,7 @@ class VisibilityModel(mesa.Model):
                 raise ValueError(f"Invalid removal plan for {video_id}")
             self.videos[video_id].plan_removal(day, duration)
 
-        # Store the data about this model
+        # Store the data 
         self.datacollector = mesa.DataCollector(
             model_reporters={
                 "day": "day",
@@ -115,7 +115,7 @@ class VisibilityModel(mesa.Model):
         return sum(video.reinstated_today for video in self.videos.values())
 
     def _update_video_availability(self):
-        """Apply the moderator's planned removals and scheduled reinstatements."""
+        """Apply the moderator's planned removals and reinstatements."""
         if self.condition == "reference":
             return
         
